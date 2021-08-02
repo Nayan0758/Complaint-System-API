@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="variableSubFlow" doc:id="cada4e2c-2f38-47c0-b8f4-ce6ca78e6c8a" >
+		<set-variable value="#[payload.CustID]" doc:name="customerid" doc:id="99e55bc1-9344-4a40-8ab5-80c579b06cb2" variableName="customerid" />
+		<set-variable value="#[payload.OrderID]" doc:name="orderid" doc:id="c2dcaab7-5bce-4b86-be5f-64a15a4c1ad8" variableName="ordid" />
+		<set-variable value="#[payload.OrderDate]" doc:name="orderdate" doc:id="fa99c32b-5af7-48b4-9c16-e3ac3838a7ab" variableName="orddate" />
+		<set-variable value="#[payload.ProductID]" doc:name="productid" doc:id="a3563e35-d65e-45da-a17a-031ed95f9cf0" variableName="prID" />
+		<set-variable value="#[payload.ProductName]" doc:name="productname" doc:id="43916164-1445-4d9f-9d51-f755bb132450" variableName="proname" />
+		<set-variable value="#[payload.ProductPrice]" doc:name="productprice" doc:id="11517667-58d7-4397-be57-b50197eb31fd" variableName="prprice" />
+		<set-variable value="#[payload.ComplaintDesc]" doc:name="complDesc" doc:id="0ed39e2e-e585-407b-9f14-f15d9e671adb" variableName="compde" />
+		<set-variable value="#[payload.ComplaintStatus]" doc:name="compStatus" doc:id="9aca191c-5006-4d2f-a218-7682b1b909f7" variableName="complsta" />
+	</sub-flow>
+	<flow name="getAllComplaintsFlow" doc:id="ff7036a5-46b8-4811-8ab7-c4df0f641b49" >
+		<db:select doc:name="Select" doc:id="19811c75-b0f3-4854-bde7-c3d6590eceae" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from complaints]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="65771785-e0d7-4435-a812-e0a2d3f342f5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	ComplaintID: payload01.ComplaintId,
+	CustID: payload01.Cid default "",
+	OrderID: payload01.Oid default "",
+	OrderDate: payload01.orderDate as String {format: "dd/MMM/YYYY"},
+	ProductID: payload01.Pid default "",
+	ProductName: payload01.prodName default "",
+	ProductPrice: payload01.prodPrice default 0,
+	ComplaintDesc: payload01.compDesc default "",
+	ComplaintStatus: payload01.compStatus default ""
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="getComplaintsByIDFlow" doc:id="d7053177-ef88-4fcd-a860-dd347e3e9d55" >
+		<db:query-single doc:name="Query single" doc:id="5c170bb8-0ba4-4fed-875a-bf30760010ee" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from complaints where ComplaintId = :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	id: vars.complaintId
+}]]]></db:input-parameters>
+		</db:query-single>
+		<ee:transform doc:name="Transform Message" doc:id="04ca9cee-db2a-4eba-9dce-b36a79bdadb2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+[{
+	ComplaintID: payload.ComplaintId,
+	CustID: payload.Cid default "",
+	OrderID: payload.Oid default "",
+	OrderDate: payload.orderDate as String {format: "dd/MMM/YYYY"},
+	ProductID: payload.Pid default "",
+	ProductName: payload.prodName default "",
+	ProductPrice: payload.prodPrice default 0,
+	ComplaintDesc: payload.compDesc default "",
+	ComplaintStatus: payload.compStatus default ""
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="deleteComplaintsFlow" doc:id="ada2e5fa-fe4d-485b-b2d0-72095162f89f" >
+		<db:delete doc:name="Delete" doc:id="a2d01ea3-f094-4df9-9d98-a70bdcd76279" config-ref="Database_Config">
+			<db:sql ><![CDATA[delete from complaints where ComplaintId = :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	id: vars.complaintId
+}]]]></db:input-parameters>
+		</db:delete>
+		<ee:transform doc:name="Transform Message" doc:id="9407ebec-4acc-4366-83bc-ee9b058defe2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Complaint with ID:" ++ " " ++ vars.complaintId as String ++ " " ++ "has been deleted"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="postComplaintsFlow" doc:id="42d3f723-4a43-4bb6-98e7-275d096c0ae2" >
+		<flow-ref doc:name="Flow Reference" doc:id="ac2f5920-6e79-4bb4-b6db-6f61c553f403" name="variableSubFlow" />
+		<db:query-single doc:name="Query single" doc:id="f20fbcb9-904c-4168-905c-cf1fe5e577e3" config-ref="Database_Config">
+			<db:sql ><![CDATA[select max(ComplaintId) from complaints]]></db:sql>
+		</db:query-single>
+		<ee:transform doc:name="Transform Message" doc:id="3bb02859-11dd-4633-8153-20aba938b301" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	ID: "Z" ++ ((payload."max(complaintId)"[1 to 4] as Number)+1)
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="#[payload.ID]" doc:name="cmpID" doc:id="9c5b9649-5c66-409a-85b8-dab1bcccda2c" variableName="compID" />
+		<db:insert doc:name="Insert" doc:id="8f8c4757-8b3d-4c06-a858-d0e994a40d9a" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into complaints(ComplaintId ,Cid ,Oid ,orderDate ,Pid ,prodName ,prodPrice ,compDesc,compStatus)
+values(:mainID,:cus,:ordid,:ordda,:proID,:pronam,:propric,:des,:stat)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	mainID: payload.ID,
+	cus: vars.customerid,
+	ordid: vars.ordid,
+	ordda: vars.orddate,
+	proID: vars.prID,
+	pronam: vars.proname,
+	propric: vars.prprice,
+	des: vars.compde,
+	stat: vars.complsta
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="838a96d5-0fac-4ca5-9f15-76a305444424" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Compaint created with given ID:" ++ vars.compID as String
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="patchComplaintsFlow" doc:id="a0744559-5736-478f-8838-64e3410aa68b" >
+		<flow-ref doc:name="Flow Reference" doc:id="b830bb32-13a5-4522-bb00-5aef68338667" name="variableSubFlow"/>
+		<db:update doc:name="Update" doc:id="d53baf18-182b-4322-973d-a6c98b8410e2" config-ref="Database_Config">
+			<db:sql ><![CDATA[update complaints set compStatus = :stat where ComplaintId = :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	id: vars.complaintId,
+	stat: vars.complsta
+}]]]></db:input-parameters>
+		</db:update>
+		<ee:transform doc:name="Transform Message" doc:id="33df7b87-913a-4c07-a72a-fd4e2840d41e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Complaint with ID:" ++ " " ++ vars.complaintId as String ++ " " ++ "has been updated"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="implementation_complaints-suite.xml" />
+	<munit:test name="getAllComplaintsFlow-test" doc:id="bc7ca378-1ad8-43f6-852d-f47b30139982" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="1e277f89-3c5f-439e-94f3-0fa46c32bca5" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://getAllComplaintsFlowtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://getAllComplaintsFlowtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getAllComplaintsFlowtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getAllComplaintsFlow" doc:id="5824376f-887f-4edf-bc18-4229c27ac38f" name="getAllComplaintsFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="17bf08cb-8b1a-4164-9b3a-8817bab22542" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getAllComplaintsFlowtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="getComplaintsByIDFlow-test" doc:id="c2ec5e9d-e5aa-4e1e-a45e-8bb0119efee3" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="d03255bd-d357-4d88-9cd9-a5d24bc92484" >
+				<munit:payload value="#[readUrl('classpath://getComplaintsByIDFlowtest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://getComplaintsByIDFlowtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getComplaintsByIDFlowtest\set-event_variable_.dwl')]" />
+					<munit:variable key="complaintId" value="#[output application/java --- readUrl('classpath://getComplaintsByIDFlowtest\set-event_variable_1.dwl')]" encoding="UTF-8" mediaType="application/java" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getComplaintsByIDFlow" doc:id="0828b9ae-1a18-4e98-bc0e-e8967c5244ef" name="getComplaintsByIDFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="e96f6bf8-e3c3-4132-9d18-7f0c07ed248a" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getComplaintsByIDFlowtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

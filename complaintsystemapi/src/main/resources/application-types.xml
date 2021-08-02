@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="comp" format="json">
+      <types:shape format="weave" example="examples/complaint metadata.json"><![CDATA[%dw 2.0
+
+type comp = Array<{|  ComplaintID: String,   CustID: String,   OrderID: String,   OrderDate: String,   ProductID: String,   ProductName: String,   ProductPrice: Number {"typeId": "int"},   ComplaintDesc: String,   ComplaintStatus: String|}> {"example": "[{\\\"ComplaintID\\\":\\\"Z1001\\\",\\\"CustID\\\":\\\"C1001\\\",\\\"OrderID\\\":\\\"O1001\\\",\\\"OrderDate\\\":\\\"29 Jan,2020\\\",\\\"ProductID\\\":\\\"P1001\\\",\\\"ProductName\\\":\\\"Casual Shirt\\\",\\\"ProductPrice\\\":280,\\\"ComplaintDesc\\\":\\\"Product Quality is poor\\\",\\\"ComplaintStatus\\\":\\\"Pending\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#65771785-e0d7-4435-a812-e0a2d3f342f5">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="comp"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#04ca9cee-db2a-4eba-9dce-b36a79bdadb2">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="comp"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

@@ -1,0 +1,294 @@
+#%RAML 1.0
+title: Complaint System API
+
+types:
+  Complaint: !include Datatypes/complaintDT.raml
+  Patch : !include Datatypes/patchDT.raml
+
+/complaints:
+  get:
+    displayName: GET all complaint details
+    description: This method fetches product complaint details
+    queryParameters:
+      CustID:
+        type: string
+        required: false
+      OrderID:
+        type: string
+        required: false
+      OrderDate:
+        type: string
+        required: false    
+
+    responses:
+      200:
+        body:
+          application/json:
+            type: Complaint[]
+            example: !include Examples/getAllComplaintExample.raml
+      400:
+        body:
+          application/json:
+             example:
+               {
+                 "message" : "Bad Request"
+               }
+      401:
+        body:
+          application/json:
+             example:
+               {
+                 "message" : "Unauthorised"
+               }
+      404:
+        body:
+          application/json:
+             example:
+               {
+                 "message" : "Complaint details not found"
+               }
+      405:
+        body:
+          application/json:
+             example:
+               {
+                 "message" : "Method not allowed"
+               }         
+      500:
+        body:
+          application/json:
+             example:
+               {
+                 "message" : "Internal Server Error"
+               }
+      502:
+        body:
+          application/json:
+             example:
+               {
+                 "message" : "Bad Gateway"
+               }
+
+  post:
+    displayName: post Complaint
+    description: Add new complaint Details into the System
+    body:
+      application/json:
+        type: Complaint
+        example: !include Examples/getComplaintwithoutIDExample.raml
+    responses:
+      201:
+        body:
+          application/json:
+            example:
+              {
+                "message": "New Complaints created with ID:"
+              }
+      400:
+        body:
+          application/json:
+             example:
+               {
+                 "message" : "Bad Request"
+               }
+      401:
+        body:
+          application/json:
+             example:
+               {
+                 "message" : "Unauthorised"
+               }
+      404:
+        body:
+          application/json:
+             example:
+               {
+                 "message" : "Complaint details not found"
+               }
+      405:
+        body:
+          application/json:
+             example:
+               {
+                 "message" : "Method not allowed"
+               }         
+      500:
+        body:
+          application/json:
+             example:
+               {
+                 "message" : "Internal Server Error"
+               }
+      502:
+        body:
+          application/json:
+             example:
+               {
+                 "message" : "Bad Gateway"
+               }
+                              
+  
+  /{complaintId}:
+    get:
+      displayName: GET complaint details by ID
+      description: Tis method fetches product complaints using ID
+      responses:
+        200:
+          body:
+            application/json:
+              type: Complaint
+              example: !include Examples/getComplaintByIDExample.raml
+        400:
+          body:
+            application/json:
+              example:
+                {
+                  "message" : "Bad request"
+                }
+        401:
+           body:
+            application/json:
+              example:
+                {
+                  "message" : "Unauthorised"
+                }
+        404:
+          body:
+            application/json:
+              example:
+                {
+                  "message" :  "Complaint details not found"
+                }
+        405:
+          body:
+            application/json:
+              example:
+                {
+                  "message" : "Method not allowed"
+                }         
+        500:
+          body:
+            application/json:
+              example:
+                {
+                  "message" : "Internal server error"
+                }
+        502:
+          body:
+            application/json:
+              example:
+                {
+                  "message" : "Bad gateway"
+                }
+    delete:
+      displayName: Delete complaint details by ID
+      description: Delete the complaints By ID
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                {
+                  "message": "Complaint with ID has been deleted !!"
+                }
+        400:
+          body:
+            application/json:
+              example:
+                {
+                  "message" : "Bad request"
+                }
+        401:
+           body:
+            application/json:
+              example:
+                {
+                  "message" : "Unauthorised"
+                }
+        404:
+          body:
+            application/json:
+              example:
+                {
+                  "message" :  "Complaint details not found"
+                }
+        405:
+          body:
+            application/json:
+              example:
+                {
+                  "message" : "Method not allowed"
+                }         
+        500:
+          body:
+            application/json:
+              example:
+                {
+                  "message" : "Internal server error"
+                }
+        502:
+          body:
+            application/json:
+              example:
+                {
+                  "message" : "Bad gateway"
+                }
+    
+    patch:
+      displayName: Patch details
+      description: Modifies complaint details
+      body:
+        application/json:
+          type: Patch
+          example: !include Examples/patchExample.raml
+      responses:
+            200:
+             body:
+                application/json:
+                  example:
+                    {
+                      "message" : "Complaint details updated successfully" 
+                    }
+            400:
+              body:
+                application/json:
+                  example:
+                    {
+                      "message" : "Bad request"
+                    }
+            401:
+              body:
+                application/json:
+                  example:
+                    {
+                      "message" : "Unauthorised"
+                    }
+            404:
+              body:
+                application/json:
+                  example:
+                    {
+                      "message" : "Complaint details not found"
+                    }
+            405:
+              body:
+                application/json:
+                  example:
+                    {
+                      "message" : "Method not allowed"
+                    }        
+            500:
+              body:
+                application/json:
+                  example:
+                    {
+                      "message" : "Internal server error"
+                    }
+            502:
+              body:
+                application/json:
+                  example:
+                    {
+                      "message" : "Bad gateway"
+                    }
+   

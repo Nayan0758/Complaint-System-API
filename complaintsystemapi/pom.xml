@@ -39,7 +39,7 @@
 						<muleVersion>4.3.0</muleVersion>
 						<workers>1</workers>
 						<workerType>Micro</workerType>
-						<applicationName>customersystemapi</applicationName>
+						<applicationName>comlaintsystemapi</applicationName>
 						<objectStoreV2>true</objectStoreV2>
 					</cloudHubDeployment>
 					<sharedLibraries>
@@ -100,9 +100,9 @@
 	
 	<distributionManagement>
         <snapshotRepository>
-              <id>dummy</id>
-              <name>dummy</name>
-              <url>http://localhost:8091/repository/dummy/</url>
+              <id>ComplaintSystemAPI</id>
+              <name>ComplaintSystemAPI</name>
+              <url>http://localhost:8091/repository/ComplaintSystemAPI/</url>
         </snapshotRepository>
      </distributionManagement>
 
